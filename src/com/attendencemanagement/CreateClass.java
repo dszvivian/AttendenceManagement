@@ -3,6 +3,7 @@ package com.attendencemanagement;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
 import java.sql.*;
 
 public class CreateClass {
@@ -15,6 +16,7 @@ public class CreateClass {
     private JButton deleteClassButton;
     private JTextField tfSearch;
     private JButton searchClassButton;
+    private JList classList;
 
     Connection con;
     PreparedStatement pst;
@@ -23,6 +25,7 @@ public class CreateClass {
     public CreateClass() {
 
         connection();
+        loadClassList();
 
         createClassButton.addActionListener(new ActionListener() {
             @Override
@@ -46,6 +49,9 @@ public class CreateClass {
                     tfCoursename.setText("");
                     tfCoursecode.setText("");
                     tfCname.requestFocus();
+
+                    loadClassList();
+
                 }
 
                 catch (SQLException e1)
@@ -81,6 +87,9 @@ public class CreateClass {
                     tfCoursecode.setText("");
                     tfCname.requestFocus();
                     tfSearch.setText("");
+
+
+                    loadClassList();
                 }
 
                 catch (SQLException e1)
@@ -113,6 +122,9 @@ public class CreateClass {
                     tfCoursecode.setText("");
                     tfCname.requestFocus();
                     tfSearch.setText("");
+
+
+                    loadClassList();
                 }
 
                 catch (SQLException e1)
@@ -160,6 +172,7 @@ public class CreateClass {
             }
         });
 
+
     }
 
 
@@ -182,10 +195,33 @@ public class CreateClass {
         }
     }
 
+
+    public void loadClassList(){
+
+        try {
+            pst = con.prepareStatement("select cname from class");
+            ResultSet rs = pst.executeQuery();
+            DefaultListModel model = new DefaultListModel();
+
+            while(rs.next()){
+                model.addElement(rs.getString("cname"));
+            }
+
+            classList.setModel(model);
+
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+
+
+
+    }
+
+
     public static void main(String[] args) {
         JFrame frame = new JFrame("CreateClass");
         frame.setContentPane(new CreateClass().mainPanelClass);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.pack();
         frame.setVisible(true);
     }
