@@ -1,9 +1,7 @@
 package com.attendencemanagement;
 
 import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ComponentAdapter;
+import java.awt.event.*;
 import java.sql.*;
 
 public class CreateClass {
@@ -18,8 +16,8 @@ public class CreateClass {
     private JButton searchClassButton;
     private JList classList;
 
-    Connection con;
-    PreparedStatement pst;
+    private Connection con;
+    private PreparedStatement pst;
 
 
     public CreateClass() {
@@ -39,9 +37,10 @@ public class CreateClass {
 
                 try {
                     pst = con.prepareStatement("insert into class(cname,coursename,coursecode)values(?,?,?)");
-                    pst.setString(1, cname);
-                    pst.setString(2, coursename);
-                    pst.setString(3, coursecode);
+
+                    pst.setString(1, coursename);
+                    pst.setString(2, coursecode);
+                    pst.setString(3, cname);
                     pst.executeUpdate();
                     JOptionPane.showMessageDialog(null,"New Class Created!!!!");
 
@@ -74,10 +73,10 @@ public class CreateClass {
 
                 try {
 
-                    pst = con.prepareStatement("update class set cname = ?,coursename = ?,coursecode = ? where cname = ?");
-                    pst.setString(1, cname);
-                    pst.setString(2, coursename);
-                    pst.setString(3, coursecode);
+                    pst = con.prepareStatement("update class set coursename = ?,coursecode = ? where cname = ?");
+                    pst.setString(1, coursename);
+                    pst.setString(2, coursecode);
+                    pst.setString(3, cname);
 
                     pst.executeUpdate();
                     JOptionPane.showMessageDialog(null, "Class Updateeed!!!!!");
@@ -147,13 +146,13 @@ public class CreateClass {
 
                     if(rs.next()==true)
                     {
-                        String name = rs.getString(1);
-                        String price = rs.getString(2);
-                        String qty = rs.getString(3);
+                        String a = rs.getString(1);//classname
+                        String b = rs.getString(2);//coursename
+                        String c = rs.getString(3);//coursecode
 
-                        tfCname.setText(name);
-                        tfCoursename.setText(price);
-                        tfCoursecode.setText(qty);
+                        tfCname.setText(a);
+                        tfCoursename.setText(b);
+                        tfCoursecode.setText(c);
                     }
                     else
                     {
@@ -173,6 +172,17 @@ public class CreateClass {
         });
 
 
+        classList.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+
+                String data = classList.getSelectedValue().toString();
+
+                CurrentClass.main(null,data);
+
+            }
+        });
     }
 
 
