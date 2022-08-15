@@ -4,28 +4,29 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class HomePage {
-    private JPanel homePanel;
-    private JButton createANewClassButton;
-    private JButton checkAttendenceOfClassButton;
+public class LoginHomePage {
+    private JButton facultyButton;
 
     public static void main(String[] args) {
-        JFrame frame = new JFrame("HomePage");
-        frame.setContentPane(new HomePage().homePanel);
+        JFrame frame = new JFrame("LoginHomePage");
+        frame.setContentPane(new LoginHomePage().mainpanel);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
-        frame.setSize(600,600);
+        frame.setSize(500,500);
         frame.setVisible(true);
     }
 
-    public HomePage() {
-        createANewClassButton.addActionListener(new ActionListener() {
+    private JButton studentButton;
+    private JPanel mainpanel;
+
+    public LoginHomePage() {
+        facultyButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                CreateClass.main(null);
+                Login.main(null);
             }
         });
-        checkAttendenceOfClassButton.addActionListener(new ActionListener() {
+        studentButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 CurrentClassReport.main(null);

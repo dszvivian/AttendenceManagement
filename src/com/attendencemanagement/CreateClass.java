@@ -18,6 +18,7 @@ public class CreateClass {
 
     private Connection con;
     private PreparedStatement pst;
+    private ResultSet rs;
 
 
     public CreateClass() {
@@ -36,11 +37,12 @@ public class CreateClass {
 
 
                 try {
+                    connection();
                     pst = con.prepareStatement("insert into class(cname,coursename,coursecode)values(?,?,?)");
 
-                    pst.setString(1, coursename);
-                    pst.setString(2, coursecode);
-                    pst.setString(3, cname);
+                    pst.setString(1, cname);
+                    pst.setString(2, coursename);
+                    pst.setString(3, coursecode);
                     pst.executeUpdate();
                     JOptionPane.showMessageDialog(null,"New Class Created!!!!");
 
@@ -50,6 +52,9 @@ public class CreateClass {
                     tfCname.requestFocus();
 
                     loadClassList();
+
+                    con.close();
+                    rs.close();
 
                 }
 
@@ -72,6 +77,7 @@ public class CreateClass {
                 coursecode = tfCoursecode.getText();
 
                 try {
+                    connection();
 
                     pst = con.prepareStatement("update class set coursename = ?,coursecode = ? where cname = ?");
                     pst.setString(1, coursename);
@@ -89,6 +95,10 @@ public class CreateClass {
 
 
                     loadClassList();
+
+
+                    con.close();
+                    rs.close();
                 }
 
                 catch (SQLException e1)
@@ -110,6 +120,8 @@ public class CreateClass {
 
 
                 try {
+
+                    connection();
                     pst = con.prepareStatement("delete from class  where cname = ?");
                     pst.setString(1, cname);
 
@@ -124,6 +136,10 @@ public class CreateClass {
 
 
                     loadClassList();
+
+
+                    con.close();
+                    rs.close();
                 }
 
                 catch (SQLException e1)
@@ -138,6 +154,7 @@ public class CreateClass {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
+                    connection();
 
                     String cname = tfSearch.getText();
                     pst = con.prepareStatement("select cname,coursename,coursecode from class where cname = ?");
@@ -162,6 +179,11 @@ public class CreateClass {
                         JOptionPane.showMessageDialog(null,"Invalid Class name ");
 
                     }
+
+
+
+                    con.close();
+                    rs.close();
                 }
 
                 catch (SQLException ex)
@@ -183,6 +205,7 @@ public class CreateClass {
 
             }
         });
+
     }
 
 
@@ -209,8 +232,9 @@ public class CreateClass {
     public void loadClassList(){
 
         try {
+            connection();
             pst = con.prepareStatement("select cname from class");
-            ResultSet rs = pst.executeQuery();
+            rs = pst.executeQuery();
             DefaultListModel model = new DefaultListModel();
 
             while(rs.next()){
@@ -218,6 +242,9 @@ public class CreateClass {
             }
 
             classList.setModel(model);
+
+            con.close();
+            rs.close();
 
         } catch (SQLException throwables) {
             throwables.printStackTrace();

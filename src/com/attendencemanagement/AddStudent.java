@@ -20,6 +20,7 @@ public class AddStudent {
 
     private Connection con;
     private PreparedStatement pst;
+    private ResultSet rs;
 
     public static void main(String[] args,String cname) {
         JFrame frame = new JFrame("AddStudent");
@@ -31,11 +32,13 @@ public class AddStudent {
 
 
     AddStudent(String cname){
-        connection();
+
         lbClassname.setText(cname);
+
         addButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+
                 String name,classname,sem,branch;
 
                 name = tfName.getText();
@@ -45,6 +48,7 @@ public class AddStudent {
 
 
                 try {
+                    connection();
                     pst = con.prepareStatement("insert into currentclass(name,cname,sem,branch)values(?,?,?,?)");
                     pst.setString(1, name);
                     pst.setString(2, classname);
@@ -57,6 +61,7 @@ public class AddStudent {
                     tfSem.setText("");
                     tfBranch.setText("");
                     tfName.requestFocus();
+                    con.close();
 
                 }
 
@@ -79,7 +84,7 @@ public class AddStudent {
                 branch = tfBranch.getText();
 
                 try {
-
+                    connection();
                     pst = con.prepareStatement("update currentclass set name = ?,sem = ?,branch = ? where cname = ? and rno = ?");
                     pst.setString(1, name);
                     pst.setString(2, sem);
@@ -96,6 +101,9 @@ public class AddStudent {
                     tfName.requestFocus();
                     tfSearch.setText("");
 
+
+                    con.close();
+                    rs.close();
 
                 }
 
@@ -117,6 +125,7 @@ public class AddStudent {
 
 
                 try {
+                    connection();
                     pst = con.prepareStatement("delete from currentclass  where cname = ? and rno = ?");
                     pst.setString(1, lbClassname.getText());
                     pst.setString(2,rno);
@@ -129,6 +138,8 @@ public class AddStudent {
                     tfBranch.setText("");
                     tfName.requestFocus();
                     tfSearch.setText("");
+                    con.close();
+                    rs.close();
 
                 }
 
@@ -143,12 +154,12 @@ public class AddStudent {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-
+                    connection();
                     String rno = tfSearch.getText();
                     pst = con.prepareStatement("select name,cname,sem,branch from currentclass where cname = ? and rno = ?");
                     pst.setString(1, lbClassname.getText());
                     pst.setString(2, rno);
-                    ResultSet rs = pst.executeQuery();
+                    rs = pst.executeQuery();
 
                     if(rs.next()==true)
                     {
@@ -168,6 +179,9 @@ public class AddStudent {
                         JOptionPane.showMessageDialog(null,"Invalid Rno !!!!!!!!!");
 
                     }
+
+                    con.close();
+                    rs.close();
                 }
 
                 catch (SQLException ex)
@@ -176,6 +190,9 @@ public class AddStudent {
                 }
             }
         });
+
+
+
     }
 
 

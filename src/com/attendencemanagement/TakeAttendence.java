@@ -15,6 +15,9 @@ public class TakeAttendence {
     private JTextField tfDate;
     private JCheckBox isPresentCheckBox;
     private JButton updateButton;
+    private JLabel lbRno;
+    private JLabel lbName;
+    private JTextField tfRno;
 
     private Connection con;
     private PreparedStatement pst;
@@ -23,52 +26,53 @@ public class TakeAttendence {
     private String rno;
 
 
-    public TakeAttendence() {
-//        updateButton.addActionListener(new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                boolean isPresent = isPresentCheckBox.isSelected();
-//                String status ,date;
-//
-//                date = tfDate.getText();
-//
-//                if(isPresent){
-//                    status = "P";
-//                }
-//                else{
-//                    status = "F";
-//                }
-//
-//
-//
-//
-//                try {
-//
-//                    pst = con.prepareStatement("update currentclass set date = ?, astatus = ? where cname = ? and rno = ?");
-//                    pst.setString(1, date);
-//                    pst.setString(2,status);
-//                    pst.setString();
-//
-//
-//                    pst.executeUpdate();
-//                    JOptionPane.showMessageDialog(null, "Class Updateeed!!!!!");
-//
-//                    tfCname.setText("");
-//                    tfCoursename.setText("");
-//                    tfCoursecode.setText("");
-//                    tfCname.requestFocus();
-//                    tfSearch.setText("");
-//
-//
-//                }
-//
-//                catch (SQLException e1)
-//                {
-//                    e1.printStackTrace();
-//                }
-//
-//            }
-//        });
+    public TakeAttendence(String data) {
+        connection();
+        fetch(data);
+
+        updateButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                boolean isPresent = isPresentCheckBox.isSelected();
+                String name,astatus ,date,rno,cname;
+
+                date = tfDate.getText();
+                name = lbName.getText();
+                rno = lbRno.getText();
+                cname = data;
+
+
+                if(isPresent){
+                    astatus = "P";
+                }
+                else{
+                    astatus = "F";
+                }
+
+
+                try {
+
+                    pst = con.prepareStatement("insert into classattendence(rno,name,cname,date,astatus)values(?,?,?,?,?)");
+                    pst.setString(1,rno);
+                    pst.setString(2,name);
+                    pst.setString(3,cname);
+                    pst.setString(4,date);
+                    pst.setString(5,astatus);
+
+                    pst.executeUpdate();
+                    JOptionPane.showMessageDialog(null, "Record Added ");
+
+                    tfRno.setText("");
+
+                }
+
+                catch (SQLException e1)
+                {
+                    e1.printStackTrace();
+                }
+
+            }
+        });
 
 
         attendenceTable.addMouseListener(new MouseAdapter() {
@@ -76,26 +80,49 @@ public class TakeAttendence {
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
 
-                attendenceTable.getSelectedRow();
+                try{
+
+
+                    int row = attendenceTable.getSelectedRow();
+
+
+
+                    String rno = (attendenceTable.getModel().getValueAt(row,0)).toString();
+                    String name = (attendenceTable.getModel().getValueAt(row,1)).toString();
+
+                    lbRno.setText(rno);
+                    lbName.setText(name);
+
+
+                }
+                catch(Exception exception){
+                    exception.printStackTrace();
+                }
+
 
             }
         });
+
+
     }
 
 
-    public void fetch(){
+    private void fetch(String data){
         try{
-            pst=con.prepareStatement("select * from currentclass");
+            connection();
+            pst=con.prepareStatement("select rno , name from currentclass where cname = ?");
+            pst.setString(1,data);
             rs= pst.executeQuery();
 
             attendenceTable.setModel(DbUtils.resultSetToTableModel(rs));
+
         }
         catch (Exception e){
             e.printStackTrace();
         }
     }
 
-    public void connection(){
+    private void connection(){
         try {
             Class.forName("org.sqlite.JDBC");
             con = DriverManager.getConnection("jdbc:sqlite:atm.db");
@@ -111,6 +138,15 @@ public class TakeAttendence {
             ex.printStackTrace();
             System.out.println(ex.getMessage());
         }
+    }
+
+
+    public static void main(String[] args , String data) {
+        JFrame frame = new JFrame("TakeAttendence");
+        frame.setContentPane(new TakeAttendence(data).mainPanel);
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        frame.pack();
+        frame.setVisible(true);
     }
 
 }

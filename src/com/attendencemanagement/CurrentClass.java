@@ -16,7 +16,6 @@ public class CurrentClass {
 
     private Connection con;
     private PreparedStatement pst;
-    private ResultSet rs;
 
 
     public static void main(String[] args,String classname) {
@@ -31,7 +30,7 @@ public class CurrentClass {
     CurrentClass(String cname){
         this.lbClassname.setText(cname);
         connection();
-        fetch();
+        fetch(cname);
         addNewStudentButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -44,14 +43,30 @@ public class CurrentClass {
 
             }
         });
+        takeAttendenceButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String data = lbClassname.getText();
+
+                TakeAttendence.main(null,data);
+            }
+        });
+
+
+
     }
 
-    public void fetch(){
+    public void fetch(String cname){
         try{
-            pst=con.prepareStatement("select * from currentclass");
-            rs= pst.executeQuery();
+            connection();
+            pst=con.prepareStatement("select * from currentclass where cname = ?");
+            pst.setString(1,cname);
+            ResultSet rs= pst.executeQuery();
 
             studentTable.setModel(DbUtils.resultSetToTableModel(rs));
+
+            con.close();
+            rs.close();
         }
         catch (Exception e){
             e.printStackTrace();
